@@ -5,15 +5,19 @@ import br.blog.smarti.processor.entity.BitfinexTrade;
 import br.blog.smarti.processor.entity.ReportOutputTrade;
 import br.blog.smarti.processor.entity.Trade;
 import br.blog.smarti.processor.enums.SideEnum;
+import lombok.extern.log4j.Log4j2;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.regex.Pattern;
 
+import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
+@Log4j2
 public class ReportOutputMapper {
 
-    private static final Pattern ALPHA_PATTERN = Pattern.compile("[A-Za-z]");
+    private static final Pattern ALPHA_UPPERCASE_PATTERN = Pattern.compile("[A-Z]");
     
     public ReportOutputTrade toEntity(BinanceTrade s) {
         if(s == null) {
@@ -56,16 +60,22 @@ public class ReportOutputMapper {
     }
 
     public ReportOutputTrade toEntity(Trade trade) {
-        if(trade instanceof BinanceTrade) {
-            return toEntity((BinanceTrade) trade);
-        } else if (trade instanceof BitfinexTrade) {
-            return toEntity((BitfinexTrade) trade);
-        } else return null;
+        try {
+            if (trade instanceof BinanceTrade) {
+                return toEntity((BinanceTrade) trade);
+            } else if (trade instanceof BitfinexTrade) {
+                return toEntity((BitfinexTrade) trade);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error(format("Error converting trade data: %s. %s", e.getMessage(), trade));
+        }
+        return null;
     }
     
     private BigDecimal toMoney(String value) {
-        String filtered = value.replaceAll(ALPHA_PATTERN.toString(),EMPTY); 
-        return new BigDecimal(filtered.replace(",", EMPTY));
+        String filtered = value.replaceAll(ALPHA_UPPERCASE_PATTERN.toString(), EMPTY).replace(",", EMPTY);
+        return new BigDecimal(filtered);
     }
     
     private String toStandardPair(String pair) {

@@ -16,8 +16,8 @@ public class BinanceCsvReaderTest {
 
     @BeforeEach
     public void setup(){
-        ReflectionTestUtils.setField(fixture, "FILE_EXTENSION", ".csv");
-        ReflectionTestUtils.setField(fixture, "FILES_PATH", "c:\\");
+        ReflectionTestUtils.setField(fixture, "fileExtension", ".csv");
+        ReflectionTestUtils.setField(fixture, "filesPath", "c:\\");
     }
 
     @Test

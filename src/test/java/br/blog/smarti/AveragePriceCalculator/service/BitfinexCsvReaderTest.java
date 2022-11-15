@@ -9,19 +9,20 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 
+
 public class BitfinexCsvReaderTest {
 
     BitfinexCsvReader fixture = new BitfinexCsvReader();
 
     @BeforeEach
     public void setup(){
-        ReflectionTestUtils.setField(fixture, "FILE_EXTENSION", ".csv");
-        ReflectionTestUtils.setField(fixture, "FILES_PATH", "c:\\");
+        ReflectionTestUtils.setField(fixture, "fileExtension", ".csv");
+        ReflectionTestUtils.setField(fixture, "filesPath", "c:\\");
     }
     
     @Test
     void shouldReadBitfinexCsv() {
-        List<BitfinexTrade> trades = fixture.readTrades();
+        List<BitfinexTrade> trades = fixture.readAllTradeFiles();
         Assertions.assertThat(trades)
                 .isNotEmpty()
                 .hasSize(192);

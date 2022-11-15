@@ -7,9 +7,14 @@ import lombok.Setter;
 @Getter
 @Setter
 public abstract class Trade {
-    
+
+    @CsvBindByName(column = "pair")
     private String pair;
+
+    @CsvBindByName(column = "exchange")
     private String exchange;
+
+    @CsvBindByName(column = "source")
     private String source;
 
     @Override

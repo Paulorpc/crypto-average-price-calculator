@@ -21,26 +21,31 @@ public class BitfinexCsvReader extends CsvReader {
     
     private static final String EXCHANGE_NAME = ExchangesEnum.BITFINEX.getName().toLowerCase();
 
-    @Value("${suported.files.extension}")
-    private static String FILE_EXTENSION;
+    @Value("${supported.files.extension}")
+    private String fileExtension;
 
     @Value("${files.input.path}")
-    private static String FILES_PATH;
+    private String filesPath;
 
-    public List<BitfinexTrade> readTrades() {
-        File inputFolder = new File(FILES_PATH);
-        FilenameFilter filter = (dir, name) -> name.toLowerCase().startsWith(EXCHANGE_NAME) && name.toLowerCase().endsWith(FILE_EXTENSION);
+    public List<BitfinexTrade> readAllTradeFiles() {
+        File inputFolder = new File(filesPath);
+        FilenameFilter filter = (dir, name) -> name.toLowerCase().startsWith(EXCHANGE_NAME) && name.toLowerCase().endsWith(fileExtension);
         List<File> reportsFiles = Arrays.asList(inputFolder.listFiles(filter));
         
         List<BitfinexTrade> trades = new ArrayList<>();
-        reportsFiles.forEach(file -> {
+        List<BitfinexTrade> fileTrades = new ArrayList<>();
+
+        for (File file : reportsFiles) {
             try {
-                trades.addAll(this.readTuples(file, BitfinexTrade.class));
+                fileTrades.addAll(this.readTuples(file, BitfinexTrade.class));
+                fileTrades.stream().forEach(t -> t.setSource(file.getName()));
+                trades.addAll(fileTrades);
+                fileTrades.clear();
             }
             catch(Exception e) {
                 log.error(format("Error reading file %s. %s", file, e.getMessage()));
             }
-        });
+        }
         return trades;
     }
     
