@@ -1,7 +1,6 @@
 package br.blog.smarti.processor.entity;
 
 import br.blog.smarti.processor.enums.SideEnum;
-import com.opencsv.bean.CsvBindAndJoinByName;
 import com.opencsv.bean.CsvBindByName;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +14,7 @@ public class ReportOutputTrade extends Trade {
 
     @CsvBindByName(column = "dateTime")
     private LocalDateTime dateTime;
-    
+
     @CsvBindByName(column = "side")
     private SideEnum side;
 

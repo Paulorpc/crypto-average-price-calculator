@@ -13,18 +13,18 @@ import java.util.List;
 
 @SpringBootApplication
 public class AveragePriceCalculatorApplication implements ApplicationRunner {
-	
-	@Autowired
-	ReportTradeService reportTradeService;
-	
-	public static void main(String[] args) {
-		SpringApplication.run(AveragePriceCalculatorApplication.class, args);
-	}
 
-	@Override
-	public void run(ApplicationArguments arg0) throws Exception {
-		List<ReportOutputTrade> trades = reportTradeService.generateReportOutputTradeContent(ExchangesEnum.BINANCE, ExchangesEnum.BITFINEX);
-		reportTradeService.generateReportOutputTradeCsv(trades);
-	}
+    @Autowired
+    ReportTradeService reportTradeService;
+
+    public static void main(String[] args) {
+        SpringApplication.run(AveragePriceCalculatorApplication.class, args);
+    }
+
+    @Override
+    public void run(ApplicationArguments arg0) throws Exception {
+        List<ReportOutputTrade> trades = reportTradeService.generateReportOutputTradeContent(ExchangesEnum.BINANCE, ExchangesEnum.BITFINEX);
+        reportTradeService.generateReportOutputTradeCsv(trades);
+    }
 
 }

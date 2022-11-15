@@ -25,11 +25,11 @@ public class BinanceCsvReader extends CsvReader {
 
     @Value("${files.input.path}")
     private String filesPath;
-    
+
     public List<BinanceTrade> readAllTradeFiles() {
         File inputFolder = new File(filesPath);
         FilenameFilter filter = (dir, name) -> name.toLowerCase().startsWith(EXCHANGE_NAME) && name.toLowerCase().endsWith(fileExtension);
-        List<File> reportsFiles = Arrays.asList(inputFolder.listFiles(filter));
+        File[] reportsFiles = inputFolder.listFiles(filter);
 
         List<BinanceTrade> trades = new ArrayList<>();
         List<BinanceTrade> fileTrades = new ArrayList<>();
@@ -40,8 +40,7 @@ public class BinanceCsvReader extends CsvReader {
                 fileTrades.stream().forEach(t -> t.setSource(file.getName()));
                 trades.addAll(fileTrades);
                 fileTrades.clear();
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 log.error(format("Error reading file %s. %s", file, e.getMessage()));
             }
         }
