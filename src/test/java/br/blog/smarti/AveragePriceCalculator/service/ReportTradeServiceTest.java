@@ -31,7 +31,7 @@ public class ReportTradeServiceTest {
     
     @Test
     void shouldGenerateReportOutputTradeContent() {
-        when(binanceCsvReader.readTrades()).thenReturn(List.of(BinanceTradeMother.createBuyTrade(), BinanceTradeMother.createSellTrade()));
+        when(binanceCsvReader.readAllTradeFiles()).thenReturn(List.of(BinanceTradeMother.createBuyTrade(), BinanceTradeMother.createSellTrade()));
         when(bitfinexCsvReader.readTrades()).thenReturn(List.of(BitfinexTradeMother.createBuyTrade(), BitfinexTradeMother.createSellTrade()));
         
         List<ReportOutputTrade> trades = fixture.generateReportOutputTradeContent();

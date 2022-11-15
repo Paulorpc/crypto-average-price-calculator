@@ -25,7 +25,7 @@ public class ReportTradeService {
     public List<ReportOutputTrade> generateReportOutputTradeContent() {
 
         List<Trade> trades = new ArrayList<>();
-        List<BinanceTrade> binanceTrades = binanceCsvReader.readTrades();
+        List<BinanceTrade> binanceTrades = binanceCsvReader.readAllTradeFiles();
         List<BitfinexTrade> bitfinextTrades = bitfinexCsvReader.readTrades();
         trades.addAll(binanceTrades);
         trades.addAll(bitfinextTrades);
