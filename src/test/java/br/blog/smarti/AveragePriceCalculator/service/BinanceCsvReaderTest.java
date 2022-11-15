@@ -14,7 +14,8 @@ public class BinanceCsvReaderTest {
     @Test
     void shouldReadBinanceCsv() {
         List<BinanceTrade> trades = fixture.readTrades();
-        Assertions.assertThat(trades).isNotEmpty();
-        trades.stream().forEach(System.out::println);
+        Assertions.assertThat(trades)
+                .isNotEmpty()
+                .hasSize(331);
     }
 }

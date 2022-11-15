@@ -14,12 +14,12 @@ public class ReportOutputMapperTest {
     @Test
     void mapFromBinanceTrade() {
         ReportOutputTrade outputTrade = mapper.toEntity(BinanceTradeMother.createBuyTrade());
-        Assertions.assertEquals("5000.0015072000", outputTrade.getPrice().toString());
+        Assertions.assertEquals("4000.0015072000", outputTrade.getPrice().toString());
         Assertions.assertEquals("1.3900000000", outputTrade.getExecuted().toString());
         Assertions.assertEquals("0.00209501", outputTrade.getAmount().toString());
         Assertions.assertEquals("0.0001817000BNB", outputTrade.getFee().toString());
         Assertions.assertEquals("Binance", outputTrade.getExchange());
-        Assertions.assertEquals("ETCBTC", outputTrade.getPair());
+        Assertions.assertEquals("BTCUSD", outputTrade.getPair());
         Assertions.assertEquals("fileName", outputTrade.getSource());
         Assertions.assertEquals("BUY", outputTrade.getSide().toString());
 
@@ -27,10 +27,10 @@ public class ReportOutputMapperTest {
 
     @Test
     void mapFromBitfinexSellTrade() {
-        ReportOutputTrade outputTrade = mapper.toEntity(BitfinexTradeMother.createBuyTrade());
-        Assertions.assertEquals("50000.00001197", outputTrade.getPrice().toString());
+        ReportOutputTrade outputTrade = mapper.toEntity(BitfinexTradeMother.createSellTrade());
+        Assertions.assertEquals("60000.00001197", outputTrade.getPrice().toString());
         Assertions.assertEquals("83.51464", outputTrade.getExecuted().toString());
-        Assertions.assertEquals("4175732.0009996702408", outputTrade.getAmount().toString());
+        Assertions.assertEquals("5010878.4009996702408", outputTrade.getAmount().toString());
         Assertions.assertEquals("0.0000019993404816", outputTrade.getFee().toString());
         Assertions.assertEquals("Bitfinex", outputTrade.getExchange());
         Assertions.assertEquals("XLMBTC", outputTrade.getPair());

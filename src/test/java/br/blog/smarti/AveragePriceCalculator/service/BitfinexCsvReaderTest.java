@@ -14,7 +14,8 @@ public class BitfinexCsvReaderTest {
     @Test
     void shouldReadBitfinexCsv() {
         List<BitfinexTrade> trades = fixture.readTrades();
-        Assertions.assertThat(trades).isNotEmpty();
-        trades.stream().forEach(System.out::println);
+        Assertions.assertThat(trades)
+                .isNotEmpty()
+                .hasSize(192);
     }
 }
