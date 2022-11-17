@@ -17,6 +17,7 @@ public final class BitfinexTradeMother {
         trade.setFee("0.0000019993404816");
         trade.setFeePerc("0.20%");
         trade.setPair("XLM/BTC");
+        trade.setFeeCurrency("BTC");
         trade.setSource("fileName");
         return trade;
     }

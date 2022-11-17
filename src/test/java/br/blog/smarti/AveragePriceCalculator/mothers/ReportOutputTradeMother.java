@@ -25,11 +25,11 @@ public class ReportOutputTradeMother {
     
     public static ReportOutputTrade createBuyTrade() {
         ReportOutputTrade trade = new ReportOutputTrade();
-        trade.setPrice(new BigDecimal("4,000.0015072000"));
-        trade.setAmount(new BigDecimal("0.00209501BTC"));
+        trade.setPrice(new BigDecimal("4000.0015072000"));
+        trade.setAmount(new BigDecimal("0.00209501"));
         trade.setDateTime(LocalDateTime.now());
         trade.setExchange("binance");
-        trade.setExecuted(new BigDecimal("1.3900000000USD"));
+        trade.setExecuted(new BigDecimal("1.3900000000"));
         trade.setFee("0.0001817000BNB");
         trade.setPair("BTCUSD");
         trade.setSide(SideEnum.BUY);
@@ -39,7 +39,7 @@ public class ReportOutputTradeMother {
 
     public static ReportOutputTrade createSellTrade() {
         ReportOutputTrade trade = new ReportOutputTrade();
-        trade.setPrice(new BigDecimal("3,000.0015072000"));
+        trade.setPrice(new BigDecimal("3000.0015072000"));
         trade.setDateTime(LocalDateTime.now());
         trade.setSide(SideEnum.SELL);
         return trade;
