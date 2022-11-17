@@ -67,8 +67,8 @@ public class ReportOutputMapper {
         d.setPair(toStandardPair(s.getPair()));
         d.setSide(identifySide(s));
         d.setPrice(toMoney(s.getPrice()));
-        d.setExecuted(toMoney(s.getExecuted()));
-        d.setAmount(calculateAmount(s));
+        d.setExecuted(toMoney(s.getExecuted()).abs());
+        d.setAmount(calculateAmount(s).abs());
         d.setFee(toFee(s));
         d.setSource(s.getSource());
 
@@ -77,7 +77,7 @@ public class ReportOutputMapper {
     
     private BigDecimal toMoney(String value) {
         String filtered = value.replaceAll(ALPHA_UPPERCASE_PATTERN.toString(), EMPTY).replace(",", EMPTY);
-        return new BigDecimal(filtered).abs();
+        return new BigDecimal(filtered);
     }
 
     private String toStandardPair(String pair) {
