@@ -31,7 +31,7 @@ public class ReportTradeService {
     ReportOutputMapper mapper = new ReportOutputMapper();
     @Value("${files.output.path}")
     private String filePath;
-    @Value("${file.output.name}")
+    @Value("${files.output.name}")
     private String fileName;
 
     public List<ReportOutputTrade> generateReportOutputTradeContent(ExchangesEnum... exchanges) {
