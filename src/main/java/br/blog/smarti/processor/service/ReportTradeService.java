@@ -7,8 +7,7 @@ import br.blog.smarti.processor.mappers.ReportOutputMapper;
 import com.opencsv.CSVWriter;
 import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
-import com.opencsv.exceptions.CsvDataTypeMismatchException;
-import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -20,6 +19,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Log4j2
 @Service
 public class ReportTradeService {
 
@@ -28,11 +28,11 @@ public class ReportTradeService {
 
     @Autowired
     BitfinexCsvReader bitfinexCsvReader;
-
-    @Value("${files.output.path}")
-    private String fileOutputPath;
-
     ReportOutputMapper mapper = new ReportOutputMapper();
+    @Value("${files.output.path}")
+    private String filePath;
+    @Value("${file.output.name}")
+    private String fileName;
 
     public List<ReportOutputTrade> generateReportOutputTradeContent(ExchangesEnum... exchanges) {
 
@@ -57,17 +57,15 @@ public class ReportTradeService {
     }
 
     public void generateReportOutputTradeCsv(List<ReportOutputTrade> trades) {
-        try (FileWriter writer = new FileWriter(fileOutputPath)) {
+        try (FileWriter writer = new FileWriter(filePath.concat(fileName))) {
             StatefulBeanToCsv<ReportOutputTrade> beanToCsv = new StatefulBeanToCsvBuilder<ReportOutputTrade>(writer)
                     .withSeparator(',')
                     .withQuotechar(CSVWriter.NO_QUOTE_CHARACTER)
                     .build();
             beanToCsv.write(trades);
-        } catch (CsvRequiredFieldEmptyException e) {
-            e.printStackTrace();
-        } catch (CsvDataTypeMismatchException e) {
-            e.printStackTrace();
         } catch (Exception e) {
+            log.error("Error generating report output. " + e.getMessage());
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
