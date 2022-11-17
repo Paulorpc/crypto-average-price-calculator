@@ -1,30 +1,36 @@
 package br.blog.smarti.processor.entity;
 
+import com.opencsv.bean.CsvBindAndJoinByPosition;
+import com.opencsv.bean.CsvBindAndJoinByPositions;
 import com.opencsv.bean.CsvBindByName;
+import com.opencsv.bean.CsvBindByPosition;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 public class BitfinexTrade extends Trade {
-
-    @CsvBindByName(column = "DATE")
-    private String dateTime;
-
-    @CsvBindByName(column = "PAIR")
+    
+    @CsvBindByPosition(position = 1)
     private String pair;
 
-    @CsvBindByName(column = "PRICE")
-    private String price;
-
-    @CsvBindByName(column = "AMOUNT")
+    @CsvBindByPosition(position = 2)
     private String executed;
 
-    @CsvBindByName(column = "FEE")
+    @CsvBindByPosition(position = 3)
+    private String price;
+
+    @CsvBindByPosition(position = 4)
     private String fee;
 
-    @CsvBindByName(column = "FEE PERC")
+    @CsvBindByPosition(position = 5)
     private String feePerc;
+
+    @CsvBindByPosition(position = 6)
+    private String feeCurrency;
+
+    @CsvBindByPosition(position = 7)
+    private String dateTime;
 
     @Override
     public String toString() {

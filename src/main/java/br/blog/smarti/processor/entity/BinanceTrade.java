@@ -1,6 +1,8 @@
 package br.blog.smarti.processor.entity;
 
 import com.opencsv.bean.CsvBindByName;
+import com.opencsv.bean.CsvBindByPosition;
+import com.opencsv.bean.CsvCustomBindByName;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,25 +10,25 @@ import lombok.Setter;
 @Setter
 public class BinanceTrade extends Trade {
 
-    @CsvBindByName(column = "Date(UTC)")
+    @CsvBindByPosition(position = 0)
     private String dateTime;
 
-    @CsvBindByName(column = "Pair")
+    @CsvBindByPosition(position = 1)
     private String pair;
 
-    @CsvBindByName(column = "Side")
+    @CsvBindByPosition(position = 2)
     private String side;
 
-    @CsvBindByName(column = "Price")
+    @CsvBindByPosition(position = 3)
     private String price;
 
-    @CsvBindByName(column = "Executed")
+    @CsvBindByPosition(position = 4)
     private String executed;
 
-    @CsvBindByName(column = "Amount")
+    @CsvBindByPosition(position = 5)
     private String amount;
 
-    @CsvBindByName(column = "Fee")
+    @CsvBindByPosition(position = 6)
     private String fee;
 
     @Override
