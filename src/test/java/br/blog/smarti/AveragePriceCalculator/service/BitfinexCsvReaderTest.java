@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,7 +26,7 @@ public class BitfinexCsvReaderTest {
     }
 
     @Test
-    void shouldReadBitfinexCsv() {
+    void shouldReadBitfinexCsv() throws FileNotFoundException {
         List<BitfinexTrade> trades = fixture.readAllTradeFiles();
         Assertions.assertThat(trades).isNotEmpty().hasSize(52);
         Assertions.assertThat(trades.get(0).getSource()).isEqualToIgnoringCase("bitfinex_01.csv");
@@ -33,5 +34,12 @@ public class BitfinexCsvReaderTest {
 
         int wrongExtensionSources = trades.stream().map(Trade::getSource).filter(s -> s.equalsIgnoreCase("wrong_extension.txt")).collect(Collectors.toList()).size();
         Assertions.assertThat(wrongExtensionSources).isEqualTo(0);
+    }
+
+    @Test
+    void shouldNotReadCsvFilesNotFound() throws FileNotFoundException {
+        Assertions.assertThatThrownBy(() -> fixture.readAllTradeFiles("c:\\reports"))
+                .isInstanceOf(FileNotFoundException.class)
+                .hasMessageContaining("Your trade report name must begin with 'bitfinex'. Ex: 'bitfinex_trades_jan-dec_2021.csv'");
     }
 }

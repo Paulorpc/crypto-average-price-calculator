@@ -25,7 +25,7 @@ public class BinanceCsvReaderTest {
     }
 
     @Test
-    void shouldReadBinanceCsv() {
+    void shouldReadBinanceCsv() throws FileNotFoundException {
         List<BinanceTrade> trades = fixture.readAllTradeFiles();
         Assertions.assertThat(trades).isNotEmpty().hasSize(140);
         Assertions.assertThat(trades.get(0).getSource()).isEqualToIgnoringCase("binance_01.csv");
@@ -33,5 +33,12 @@ public class BinanceCsvReaderTest {
 
         int wrongExtensionSources = trades.stream().map(Trade::getSource).filter(s -> s.equalsIgnoreCase("wrong_extension.txt")).collect(Collectors.toList()).size();
         Assertions.assertThat(wrongExtensionSources).isEqualTo(0);
+    }
+
+    @Test
+    void shouldNotReadCsvFilesNotFound() throws FileNotFoundException {
+        Assertions.assertThatThrownBy(() -> fixture.readAllTradeFiles("c:\\reports"))
+                .isInstanceOf(FileNotFoundException.class)
+                .hasMessageContaining("Your trade report name must begin with 'binance'. Ex: 'binance_trades_jan-dec_2021.csv'");
     }
 }
