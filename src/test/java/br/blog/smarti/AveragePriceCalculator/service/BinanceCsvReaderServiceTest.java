@@ -2,7 +2,7 @@ package br.blog.smarti.AveragePriceCalculator.service;
 
 import br.blog.smarti.processor.entity.BinanceTrade;
 import br.blog.smarti.processor.entity.Trade;
-import br.blog.smarti.processor.service.BinanceCsvReader;
+import br.blog.smarti.processor.service.BinanceCsvReaderService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,7 +16,7 @@ public class BinanceCsvReaderTest {
 
     private final String FILES_PATH = this.getClass().getClassLoader().getResource("").getPath();
 
-    BinanceCsvReader fixture = new BinanceCsvReader();
+    BinanceCsvReaderService fixture = new BinanceCsvReaderService();
 
     @BeforeEach
     public void setup() throws FileNotFoundException {
