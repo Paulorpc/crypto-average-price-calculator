@@ -1,5 +1,6 @@
 package br.blog.smarti.processor.service;
 
+import br.blog.smarti.processor.Utils.FileUtils;
 import br.blog.smarti.processor.entity.ReportOutputTrade;
 import br.blog.smarti.processor.entity.Trade;
 import br.blog.smarti.processor.enums.ExchangesEnum;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.util.ArrayList;
@@ -25,16 +27,18 @@ import java.util.stream.Collectors;
 @Service
 public class ReportTradeService {
 
-    @Autowired
-    BinanceCsvReader binanceCsvReader;
+    private static final char COMMA = ',';
 
     @Autowired
-    BitfinexCsvReader bitfinexCsvReader;
-    ReportOutputMapper mapper = new ReportOutputMapper();
-    @Value("${files.output.path}")
-    private String filePath;
-    @Value("${files.output.name}")
-    private String fileName;
+    private BinanceCsvReaderService binanceCsvReader;
+
+    @Autowired
+    private BitfinexCsvReaderService bitfinexCsvReader;
+
+    @Autowired
+    private FileUtils fileUtils;
+    
+    private ReportOutputMapper mapper = new ReportOutputMapper();
 
     public List<ReportOutputTrade> generateReportOutputTradeContent(ExchangesEnum... exchanges) throws FileNotFoundException {
         return generateReportOutputTradeContent(null, exchanges);
@@ -69,16 +73,16 @@ public class ReportTradeService {
     }
 
     public void generateReportOutputTradeCsv(String customPath, List<ReportOutputTrade> trades) {
-        String outputPathName = StringUtils.isBlank(customPath) ? filePath.concat(fileName) : customPath.concat("\\").concat(fileName);
+        File getOutputFileNamePath = fileUtils.getOutputFileNamePath(customPath);
 
-        try (FileWriter writer = new FileWriter(outputPathName)) {
+        try (FileWriter writer = new FileWriter(getOutputFileNamePath)) {
             StatefulBeanToCsv<ReportOutputTrade> beanToCsv = new StatefulBeanToCsvBuilder<ReportOutputTrade>(writer)
-                    .withSeparator(',')
+                    .withSeparator(COMMA)
                     .withQuotechar(CSVWriter.NO_QUOTE_CHARACTER)
                     .build();
             beanToCsv.write(trades);
             log.info("Trades Report generated with success!");
-            log.info("Destination path: " + outputPathName);
+            log.info("Destination path: " + getOutputFileNamePath);
         } catch (Exception e) {
             log.error("Error generating report output. " + e.getMessage());
             e.printStackTrace();

@@ -3,19 +3,18 @@ package br.blog.smarti.AveragePriceCalculator.service;
 import br.blog.smarti.AveragePriceCalculator.mothers.BinanceTradeMother;
 import br.blog.smarti.AveragePriceCalculator.mothers.BitfinexTradeMother;
 import br.blog.smarti.AveragePriceCalculator.mothers.ReportOutputTradeMother;
+import br.blog.smarti.processor.Utils.FileUtils;
 import br.blog.smarti.processor.entity.ReportOutputTrade;
 import br.blog.smarti.processor.enums.ExchangesEnum;
-import br.blog.smarti.processor.service.BinanceCsvReader;
-import br.blog.smarti.processor.service.BitfinexCsvReader;
+import br.blog.smarti.processor.service.BinanceCsvReaderService;
+import br.blog.smarti.processor.service.BitfinexCsvReaderService;
 import br.blog.smarti.processor.service.ReportTradeService;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -25,28 +24,20 @@ import java.nio.file.Files;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class ReportTradeServiceTest {
-
-    private final String FILE_PATH = this.getClass().getClassLoader().getResource("").getPath();
-    private final String FILE_NAME = "reportOutputTest.csv";
-    @Mock
-    BinanceCsvReader binanceCsvReader;
-    @Mock
-    BitfinexCsvReader bitfinexCsvReader;
     @InjectMocks
     ReportTradeService fixture = new ReportTradeService();
-
-    @BeforeEach
-    public void setup() {
-        ReflectionTestUtils.setField(fixture, "filePath", FILE_PATH);
-        ReflectionTestUtils.setField(fixture, "fileName", FILE_NAME);
-    }
+    @Mock
+    private BinanceCsvReaderService binanceCsvReader;
+    @Mock
+    private BitfinexCsvReaderService bitfinexCsvReader;
+    @Mock
+    private FileUtils fileUtils;
 
     @Test
     void shouldNotGenerateReportOutputTradeMissingParameter() {
@@ -100,11 +91,14 @@ public class ReportTradeServiceTest {
 
     @Test
     void shouldGenerateReportOutputTradeCsvFile() throws IOException {
+        String fileName = "reportOutputTest.csv";
+        File filePathName = new File(this.getClass().getClassLoader().getResource(fileName).getPath());
+
+        when(fileUtils.getOutputFileNamePath(any())).thenReturn(filePathName);
+
         fixture.generateReportOutputTradeCsv(ReportOutputTradeMother.createTradeList());
 
-        File file = new File(FILE_PATH.concat(FILE_NAME));
-        String fileContent = Files.readString(file.toPath(), StandardCharsets.UTF_8);
-
+        String fileContent = Files.readString(filePathName.toPath(), StandardCharsets.UTF_8);
         Assertions.assertThat(fileContent).containsIgnoringCase("binance");
         Assertions.assertThat(fileContent).containsIgnoringCase("bitfinex");
     }
