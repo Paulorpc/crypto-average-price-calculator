@@ -11,6 +11,7 @@
 	<groupId>br.blog.smarti</groupId>
 	<artifactId>crypto-average-price-calculator</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
 	<name>crypto-average-price-calculator</name>
 	<description>Simple project to read and process trades reports from some exchanges and generate a standartized output report and calculate assets average price</description>
 	<properties>
@@ -69,6 +70,19 @@
 						</exclude>
 					</excludes>
 				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+						<configuration>
+							<classifier>spring-boot</classifier>
+							<mainClass>
+								br.blog.smarti.processor.AveragePriceCalculatorApplication
+							</mainClass>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
