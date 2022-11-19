@@ -2,19 +2,23 @@ package br.blog.smarti.AveragePriceCalculator.service;
 
 import br.blog.smarti.AveragePriceCalculator.mothers.BinanceTradeMother;
 import br.blog.smarti.AveragePriceCalculator.mothers.BitfinexTradeMother;
-import br.blog.smarti.AveragePriceCalculator.mothers.ReportOutputTradeMother;
 import br.blog.smarti.processor.Utils.FileUtils;
 import br.blog.smarti.processor.entity.ReportOutputTrade;
+import br.blog.smarti.processor.entity.Trade;
 import br.blog.smarti.processor.enums.ExchangesEnum;
 import br.blog.smarti.processor.service.BinanceCsvReaderService;
 import br.blog.smarti.processor.service.BitfinexCsvReaderService;
+import br.blog.smarti.processor.service.CsvTradesReader;
 import br.blog.smarti.processor.service.ReportTradeService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.stubbing.Answer;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -22,6 +26,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -31,23 +36,23 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class ReportTradeServiceTest {
     @InjectMocks
-    ReportTradeService fixture = new ReportTradeService();
+    ReportTradeService fixture;
+
     @Mock
-    private BinanceCsvReaderService binanceCsvReader;
+    BinanceCsvReaderService binanceCsvReader;
+
     @Mock
-    private BitfinexCsvReaderService bitfinexCsvReader;
+    BitfinexCsvReaderService bitfinexCsvReader;
+
+    @Spy
+    List<CsvTradesReader> csvTradesReader;
+
     @Mock
     private FileUtils fileUtils;
 
     @Test
-    void shouldNotGenerateReportOutputTradeMissingParameter() {
-        Assertions.assertThatThrownBy(() -> fixture.generateReportOutputTradeContent())
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("you must indicate wich reports you want to process");
-    }
-
-    @Test
     void shouldGenerateReportOutputTradeContentFromBinance() throws FileNotFoundException {
+        when(csvTradesReader.stream()).thenReturn(Stream.of(getCsvReaders()));
         when(binanceCsvReader.readAllTradeFiles(any())).thenReturn(List.of(BinanceTradeMother.createBuyTrade(), BinanceTradeMother.createSellTrade()));
 
         List<ReportOutputTrade> trades = fixture.generateReportOutputTradeContent(ExchangesEnum.BINANCE);
@@ -56,12 +61,16 @@ public class ReportTradeServiceTest {
                 .isNotEmpty()
                 .hasSize(2);
 
+        long sourceFiles = trades.stream().map(Trade::getSource).distinct().count();
+        Assertions.assertThat(sourceFiles).isEqualTo(1);
+
         verify(binanceCsvReader, times(1)).readAllTradeFiles(any());
         verify(bitfinexCsvReader, times(0)).readAllTradeFiles(any());
     }
 
     @Test
     void shouldGenerateReportOutputTradeContentFromBitfinex() throws FileNotFoundException {
+        when(csvTradesReader.stream()).thenReturn(Stream.of(getCsvReaders()));
         when(bitfinexCsvReader.readAllTradeFiles(any())).thenReturn(List.of(BitfinexTradeMother.createBuyTrade(), BitfinexTradeMother.createSellTrade()));
 
         List<ReportOutputTrade> trades = fixture.generateReportOutputTradeContent(ExchangesEnum.BITFINEX);
@@ -70,12 +79,53 @@ public class ReportTradeServiceTest {
                 .isNotEmpty()
                 .hasSize(2);
 
+        long sourceFiles = trades.stream().map(Trade::getSource).distinct().count();
+        Assertions.assertThat(sourceFiles).isEqualTo(1);
+
+        verify(binanceCsvReader, times(0)).readAllTradeFiles(any());
+        verify(bitfinexCsvReader, times(1)).readAllTradeFiles(any());
+    }
+
+    @Test
+    void shouldGenerateReportOutputTradeContentFrom2ExchangeFiles() throws FileNotFoundException {
+        var bitfinexBuyTrade = BitfinexTradeMother.createBuyTrade();
+        bitfinexBuyTrade.setSource("someOtherFile.csv");
+
+        when(csvTradesReader.stream()).thenReturn(Stream.of(getCsvReaders()));
+        when(bitfinexCsvReader.readAllTradeFiles(any())).thenReturn(List.of(bitfinexBuyTrade, BitfinexTradeMother.createSellTrade()));
+
+        List<ReportOutputTrade> trades = fixture.generateReportOutputTradeContent(ExchangesEnum.BITFINEX);
+
+        Assertions.assertThat(trades)
+                .isNotEmpty()
+                .hasSize(2);
+
+        long sourceFiles = trades.stream().map(Trade::getSource).distinct().count();
+        Assertions.assertThat(sourceFiles).isEqualTo(2);
+
         verify(binanceCsvReader, times(0)).readAllTradeFiles(any());
         verify(bitfinexCsvReader, times(1)).readAllTradeFiles(any());
     }
 
     @Test
     void shouldGenerateReportOutputTradeContentFromAllExchanges() throws FileNotFoundException {
+        when(csvTradesReader.stream()).thenReturn(Stream.of(getCsvReaders()));
+        when(binanceCsvReader.readAllTradeFiles(any())).thenReturn(List.of(BinanceTradeMother.createBuyTrade(), BinanceTradeMother.createSellTrade()));
+        when(bitfinexCsvReader.readAllTradeFiles(any())).thenReturn(List.of(BitfinexTradeMother.createBuyTrade(), BitfinexTradeMother.createSellTrade()));
+
+        List<ReportOutputTrade> trades = fixture.generateReportOutputTradeContent();
+
+        Assertions.assertThat(trades)
+                .isNotEmpty()
+                .hasSize(4);
+
+        verify(binanceCsvReader, times(1)).readAllTradeFiles(any());
+        verify(bitfinexCsvReader, times(1)).readAllTradeFiles(any());
+    }
+
+    @Test
+    void shouldGenerateReportOutputTradeContentFromAllExchangesWithParameter() throws FileNotFoundException {
+        when(csvTradesReader.stream()).thenAnswer(getStreamAnswer(getCsvReaders()));
         when(binanceCsvReader.readAllTradeFiles(any())).thenReturn(List.of(BinanceTradeMother.createBuyTrade(), BinanceTradeMother.createSellTrade()));
         when(bitfinexCsvReader.readAllTradeFiles(any())).thenReturn(List.of(BitfinexTradeMother.createBuyTrade(), BitfinexTradeMother.createSellTrade()));
 
@@ -95,12 +145,35 @@ public class ReportTradeServiceTest {
         File filePathName = new File(this.getClass().getClassLoader().getResource(fileName).getPath());
 
         when(fileUtils.getOutputFileNamePath(any())).thenReturn(filePathName);
+        when(csvTradesReader.stream()).thenAnswer(getStreamAnswer(getCsvReaders()));
+        when(binanceCsvReader.readAllTradeFiles(any())).thenReturn(List.of(BinanceTradeMother.createBuyTrade(), BinanceTradeMother.createSellTrade()));
+        when(bitfinexCsvReader.readAllTradeFiles(any())).thenReturn(List.of(BitfinexTradeMother.createBuyTrade(), BitfinexTradeMother.createSellTrade()));
 
-        fixture.generateReportOutputTradeCsv(ReportOutputTradeMother.createTradeList());
+        fixture.generateReportOutputTradeCsv();
 
         String fileContent = Files.readString(filePathName.toPath(), StandardCharsets.UTF_8);
         Assertions.assertThat(fileContent).containsIgnoringCase("binance");
         Assertions.assertThat(fileContent).containsIgnoringCase("bitfinex");
+    }
+
+    private CsvTradesReader[] getCsvReaders() {
+        return new CsvTradesReader[]{binanceCsvReader, bitfinexCsvReader};
+    }
+
+    /***
+     * Necessário pois o stream soh pode ser acessado uma únca vez, então é preciso gerar novas instancias quando 
+     * é percorrido mais de uma vez. 
+     * @param readers
+     * @return
+     */
+    private Answer<Stream> getStreamAnswer(CsvTradesReader... readers) {
+        Answer<Stream> answer = new Answer<Stream>() {
+            @Override
+            public Stream answer(InvocationOnMock invocation) throws Throwable {
+                return Stream.of(readers);
+            }
+        };
+        return answer;
     }
 }
 

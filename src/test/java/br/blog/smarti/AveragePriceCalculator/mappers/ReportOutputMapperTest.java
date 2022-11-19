@@ -1,16 +1,16 @@
 package br.blog.smarti.AveragePriceCalculator.mappers;
 
-import br.blog.smarti.processor.entity.ReportOutputTrade;
-import br.blog.smarti.processor.enums.SideEnum;
 import br.blog.smarti.AveragePriceCalculator.mothers.BinanceTradeMother;
 import br.blog.smarti.AveragePriceCalculator.mothers.BitfinexTradeMother;
+import br.blog.smarti.processor.entity.ReportOutputTrade;
+import br.blog.smarti.processor.enums.SideEnum;
 import br.blog.smarti.processor.mappers.ReportOutputMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class ReportOutputMapperTest {
     private ReportOutputMapper mapper = new ReportOutputMapper();
-    
+
     @Test
     void mapFromBinanceTrade() {
         ReportOutputTrade outputTrade = mapper.toEntity(BinanceTradeMother.createBuyTrade());
@@ -20,9 +20,8 @@ public class ReportOutputMapperTest {
         Assertions.assertEquals("0.0001817000BNB", outputTrade.getFee().toString());
         Assertions.assertEquals("Binance", outputTrade.getExchange());
         Assertions.assertEquals("BTCUSD", outputTrade.getPair());
-        Assertions.assertEquals("fileName", outputTrade.getSource());
+        Assertions.assertEquals("Binance_fileName.csv", outputTrade.getSource());
         Assertions.assertEquals("BUY", outputTrade.getSide().toString());
-
     }
 
     @Test
@@ -34,9 +33,8 @@ public class ReportOutputMapperTest {
         Assertions.assertEquals("0.0000019993404816BTC", outputTrade.getFee().toString());
         Assertions.assertEquals("Bitfinex", outputTrade.getExchange());
         Assertions.assertEquals("XLMBTC", outputTrade.getPair());
-        Assertions.assertEquals("fileName", outputTrade.getSource());
+        Assertions.assertEquals("Bitfinex_fileName.csv", outputTrade.getSource());
         Assertions.assertEquals(SideEnum.SELL, outputTrade.getSide());
-
     }
 
     @Test
@@ -48,7 +46,7 @@ public class ReportOutputMapperTest {
         Assertions.assertEquals("0.0000019993404816BTC", outputTrade.getFee().toString());
         Assertions.assertEquals("Bitfinex", outputTrade.getExchange());
         Assertions.assertEquals("XLMBTC", outputTrade.getPair());
-        Assertions.assertEquals("fileName", outputTrade.getSource());
+        Assertions.assertEquals("Bitfinex_fileName.csv", outputTrade.getSource());
         Assertions.assertEquals(SideEnum.BUY, outputTrade.getSide());
     }
 }

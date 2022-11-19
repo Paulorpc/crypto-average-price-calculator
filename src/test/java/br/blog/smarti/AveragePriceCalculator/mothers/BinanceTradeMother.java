@@ -18,7 +18,7 @@ public class BinanceTradeMother {
         trade.setFee("0.0001817000BNB");
         trade.setPair("BTCUSD");
         trade.setSide("BUY");
-        trade.setSource("fileName");
+        trade.setSource("Binance_fileName.csv");
         return trade;
     }
 

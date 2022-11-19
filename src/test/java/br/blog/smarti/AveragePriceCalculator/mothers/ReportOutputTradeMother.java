@@ -33,7 +33,7 @@ public class ReportOutputTradeMother {
         trade.setFee("0.0001817000BNB");
         trade.setPair("BTCUSD");
         trade.setSide(SideEnum.BUY);
-        trade.setSource("fileName");
+        trade.setSource("fileName.csv");
         return trade;
     }
 
@@ -49,6 +49,7 @@ public class ReportOutputTradeMother {
         ReportOutputTrade trade = createBuyTrade();
         trade.setPrice(new BigDecimal(price));
         trade.setExchange(exchange);
+        trade.setSource(exchange.concat("_").concat(trade.getSource()));
         return trade;
     }
 
@@ -56,6 +57,7 @@ public class ReportOutputTradeMother {
         ReportOutputTrade trade = createSellTrade();
         trade.setPrice(new BigDecimal(price));
         trade.setExchange(exchange);
+        trade.setSource(exchange.concat("_").concat(trade.getSource()));
         return trade;
     }
 }

@@ -3,11 +3,11 @@ package br.blog.smarti.AveragePriceCalculator.mothers;
 import br.blog.smarti.processor.entity.BitfinexTrade;
 
 public final class BitfinexTradeMother {
-    
+
     private BitfinexTradeMother() {
         throw new UnsupportedOperationException("utility class");
     }
-    
+
     public static BitfinexTrade createBuyTrade() {
         BitfinexTrade trade = new BitfinexTrade();
         trade.setPrice("5,0000.00001197");
@@ -18,7 +18,7 @@ public final class BitfinexTradeMother {
         trade.setFeePerc("0.20%");
         trade.setPair("XLM/BTC");
         trade.setFeeCurrency("BTC");
-        trade.setSource("fileName");
+        trade.setSource("Bitfinex_fileName.csv");
         return trade;
     }
 
