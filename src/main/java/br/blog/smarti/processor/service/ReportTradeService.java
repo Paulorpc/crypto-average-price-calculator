@@ -9,9 +9,7 @@ import com.opencsv.CSVWriter;
 import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -30,14 +28,11 @@ public class ReportTradeService {
     private static final char COMMA = ',';
 
     @Autowired
-    private BinanceCsvReaderService binanceCsvReader;
-
-    @Autowired
-    private BitfinexCsvReaderService bitfinexCsvReader;
+    private List<CsvTradesReader> csvTradesReader;
 
     @Autowired
     private FileUtils fileUtils;
-    
+
     private ReportOutputMapper mapper = new ReportOutputMapper();
 
     public List<ReportOutputTrade> generateReportOutputTradeContent(ExchangesEnum... exchanges) throws FileNotFoundException {
@@ -45,21 +40,20 @@ public class ReportTradeService {
     }
 
     public List<ReportOutputTrade> generateReportOutputTradeContent(String customPath, ExchangesEnum... exchanges) throws FileNotFoundException {
-
-        String inputPath = StringUtils.isBlank(customPath) ? null : customPath;
         List<ExchangesEnum> exchangesList = Arrays.asList(exchanges);
         List<Trade> trades = new ArrayList<>();
 
         if (exchangesList.isEmpty()) {
-            throw new IllegalArgumentException("you must indicate wich reports you want to process");
+            csvTradesReader.stream().forEach(csvTradesReader -> trades.addAll(csvTradesReader.readAllTradeFiles(customPath)));
+        } else {
+            exchangesList.forEach(exchangeEnum -> csvTradesReader.stream()
+                    .filter(c -> c.getClass().getCanonicalName().contains(exchangeEnum.getName()))
+                    .findAny()
+                    .ifPresent(csvTradesReader -> trades.addAll(csvTradesReader.readAllTradeFiles(customPath))));
         }
 
-        if (exchangesList.contains(ExchangesEnum.BINANCE)) {
-            trades.addAll(binanceCsvReader.readAllTradeFiles(inputPath));
-        }
-        if (exchangesList.contains(ExchangesEnum.BITFINEX)) {
-            trades.addAll(bitfinexCsvReader.readAllTradeFiles(inputPath));
-        }
+        Long filesReaded = trades.stream().map(Trade::getSource).distinct().count();
+        log.info("Imported [{}] files and [{}] Trades", filesReaded, trades.size());
 
         return trades.stream()
                 .map(mapper::toEntity)
@@ -67,12 +61,12 @@ public class ReportTradeService {
                 .collect(Collectors.toList());
     }
 
-
-    public void generateReportOutputTradeCsv(List<ReportOutputTrade> trades) {
-        generateReportOutputTradeCsv(null, trades);
+    public void generateReportOutputTradeCsv() throws FileNotFoundException {
+        generateReportOutputTradeCsv(null);
     }
 
-    public void generateReportOutputTradeCsv(String customPath, List<ReportOutputTrade> trades) {
+    public void generateReportOutputTradeCsv(String customPath, ExchangesEnum... exchanges) throws FileNotFoundException {
+        List<ReportOutputTrade> trades = generateReportOutputTradeContent(customPath, exchanges);
         File getOutputFileNamePath = fileUtils.getOutputFileNamePath(customPath);
 
         try (FileWriter writer = new FileWriter(getOutputFileNamePath)) {
@@ -84,10 +78,11 @@ public class ReportTradeService {
             log.info("Trades Report generated with success!");
             log.info("Destination path: " + getOutputFileNamePath);
         } catch (Exception e) {
-            log.error("Error generating report output. " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error generating report output. {}", e.getMessage());
+            log.debug(e);
             throw new RuntimeException(e);
         }
     }
+
 
 }
