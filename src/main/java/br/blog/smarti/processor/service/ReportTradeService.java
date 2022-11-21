@@ -1,10 +1,10 @@
 package br.blog.smarti.processor.service;
 
-import br.blog.smarti.processor.Utils.FileUtils;
 import br.blog.smarti.processor.entity.ReportOutputTrade;
 import br.blog.smarti.processor.entity.Trade;
 import br.blog.smarti.processor.enums.ExchangesEnum;
 import br.blog.smarti.processor.mappers.ReportOutputMapper;
+import br.blog.smarti.processor.utils.FileUtils;
 import com.opencsv.CSVWriter;
 import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;

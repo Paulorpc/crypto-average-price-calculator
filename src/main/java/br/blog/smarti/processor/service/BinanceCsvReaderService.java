@@ -1,8 +1,8 @@
 package br.blog.smarti.processor.service;
 
-import br.blog.smarti.processor.Utils.FileUtils;
 import br.blog.smarti.processor.entity.BinanceTrade;
 import br.blog.smarti.processor.enums.ExchangesEnum;
+import br.blog.smarti.processor.utils.FileUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -78,8 +78,8 @@
 						<configuration>
 							<classifier>spring-boot</classifier>
 							<mainClass>
-								br.blog.smarti.processor.AveragePriceCalculatorApplication
-							</mainClass>
+                                br.blog.smarti.processor.TradesReportProcessor
+                            </mainClass>
 						</configuration>
 					</execution>
 				</executions>

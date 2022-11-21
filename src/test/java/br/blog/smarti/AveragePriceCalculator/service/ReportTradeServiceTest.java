@@ -2,7 +2,6 @@ package br.blog.smarti.AveragePriceCalculator.service;
 
 import br.blog.smarti.AveragePriceCalculator.mothers.BinanceTradeMother;
 import br.blog.smarti.AveragePriceCalculator.mothers.BitfinexTradeMother;
-import br.blog.smarti.processor.Utils.FileUtils;
 import br.blog.smarti.processor.entity.ReportOutputTrade;
 import br.blog.smarti.processor.entity.Trade;
 import br.blog.smarti.processor.enums.ExchangesEnum;
@@ -10,6 +9,7 @@ import br.blog.smarti.processor.service.BinanceCsvReaderService;
 import br.blog.smarti.processor.service.BitfinexCsvReaderService;
 import br.blog.smarti.processor.service.CsvTradesReader;
 import br.blog.smarti.processor.service.ReportTradeService;
+import br.blog.smarti.processor.utils.FileUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

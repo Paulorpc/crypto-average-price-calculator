@@ -1,9 +1,9 @@
 package br.blog.smarti.AveragePriceCalculator.service;
 
-import br.blog.smarti.processor.Utils.FileUtils;
 import br.blog.smarti.processor.entity.BinanceTrade;
 import br.blog.smarti.processor.entity.Trade;
 import br.blog.smarti.processor.service.BinanceCsvReaderService;
+import br.blog.smarti.processor.utils.FileUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
