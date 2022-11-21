@@ -32,22 +32,28 @@ public final class FileUtils {
     }
 
     public File getInputFolder() {
-        File inputFolder = new File(StringUtils.isBlank(filesConfig.getFilesCustomPath()) ? filesConfig.getFilesInputPath() : filesConfig.getFilesCustomPath());
-        if (!inputFolder.isDirectory()) {
-            throw new RuntimeException("Input folder not found or it's not a directory: " + inputFolder.getPath().toString());
-        }
+        File inputFolder = new File(StringUtils.isBlank(filesConfig.getFilesCustomPath()) ? 
+                filesConfig.getFilesInputPath() : filesConfig.getFilesCustomPath());
+        validateDirectory(inputFolder);
         return inputFolder;
     }
 
     public File getOutputFolder() {
-        return new File(StringUtils.isBlank(filesConfig.getFilesCustomPath()) ?
-                filesConfig.getFilesOutputPath() : guaranteeFinalSlash(filesConfig.getFilesCustomPath()));
+        File outputFolder = new File(StringUtils.isBlank(filesConfig.getFilesCustomPath()) ?
+                filesConfig.getFilesOutputPath() : filesConfig.getFilesCustomPath());
+        validateDirectory(outputFolder);
+        return outputFolder;
+    }
+    
+    private void validateDirectory(File folder) {
+        if (!folder.isDirectory()) {
+            throw new RuntimeException("Input folder not found or it's not a directory: " + folder.getPath());
+        }
     }
 
     public File getOutputFileNamePath() {
-        String folder = StringUtils.isBlank(filesConfig.getFilesCustomPath()) ?
-                filesConfig.getFilesOutputPath() : guaranteeFinalSlash(filesConfig.getFilesCustomPath());
-        return new File(folder.concat(filesConfig.getFilesOutputName()));
+        String folder = getOutputFolder().getAbsolutePath();
+        return new File(guaranteeFinalSlash(folder).concat(filesConfig.getFilesOutputName()));
     }
 
     // todo create a generic solution
