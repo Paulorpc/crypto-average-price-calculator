@@ -36,20 +36,16 @@ public class ReportTradeService {
     private ReportOutputMapper mapper = new ReportOutputMapper();
 
     public List<ReportOutputTrade> generateReportOutputTradeContent(ExchangesEnum... exchanges) throws FileNotFoundException {
-        return generateReportOutputTradeContent(null, exchanges);
-    }
-
-    public List<ReportOutputTrade> generateReportOutputTradeContent(String customPath, ExchangesEnum... exchanges) throws FileNotFoundException {
         List<ExchangesEnum> exchangesList = Arrays.asList(exchanges);
         List<Trade> trades = new ArrayList<>();
 
         if (exchangesList.isEmpty()) {
-            csvTradesReader.stream().forEach(csvTradesReader -> trades.addAll(csvTradesReader.readAllTradeFiles(customPath)));
+            csvTradesReader.stream().forEach(csvTradesReader -> trades.addAll(csvTradesReader.readAllTradeFiles()));
         } else {
             exchangesList.forEach(exchangeEnum -> csvTradesReader.stream()
                     .filter(c -> c.getClass().getCanonicalName().contains(exchangeEnum.getName()))
                     .findAny()
-                    .ifPresent(csvTradesReader -> trades.addAll(csvTradesReader.readAllTradeFiles(customPath))));
+                    .ifPresent(csvTradesReader -> trades.addAll(csvTradesReader.readAllTradeFiles())));
         }
 
         Long filesReaded = trades.stream().map(Trade::getSource).distinct().count();
@@ -66,8 +62,8 @@ public class ReportTradeService {
     }
 
     public void generateReportOutputTradeCsv(String customPath, ExchangesEnum... exchanges) throws FileNotFoundException {
-        List<ReportOutputTrade> trades = generateReportOutputTradeContent(customPath, exchanges);
-        File getOutputFileNamePath = fileUtils.getOutputFileNamePath(customPath);
+        List<ReportOutputTrade> trades = generateReportOutputTradeContent(exchanges);
+        File getOutputFileNamePath = fileUtils.getOutputFileNamePath();
 
         try (FileWriter writer = new FileWriter(getOutputFileNamePath)) {
             StatefulBeanToCsv<ReportOutputTrade> beanToCsv = new StatefulBeanToCsvBuilder<ReportOutputTrade>(writer)

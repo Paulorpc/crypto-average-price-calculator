@@ -1,8 +1,9 @@
-package br.blog.smarti.processor.Utils;
+package br.blog.smarti.processor.utils;
 
+import br.blog.smarti.processor.configuration.FilesConfig;
 import br.blog.smarti.processor.enums.ExchangesEnum;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -11,42 +12,44 @@ import java.util.Arrays;
 import java.util.List;
 
 @Component
-public class FileUtils {
+public final class FileUtils {
 
-    @Value("${files.supported.extension}")
-    private String fileExtension;
+    @Autowired
+    private FilesConfig filesConfig;
 
-    @Value("${files.input.path}")
-    private String inputFilesPath;
-
-    @Value("${files.output.path}")
-    private String outputFilesPath;
-
-    @Value("${files.output.name}")
-    private String outputFileName;
-
-    public List<File> listFilesFromFolder(File folder, ExchangesEnum exchange) {
+    public List<File> listFilesFromInputFolder(ExchangesEnum exchange) {
         FilenameFilter filter = getFileNameFilter(exchange);
-        return Arrays.asList(folder.listFiles(filter));
+        File[] files = getInputFolder().listFiles(filter);
+        if (files == null) {
+            throw new RuntimeException("There is no files in input folder");
+        }
+        return Arrays.asList(files);
     }
 
     private FilenameFilter getFileNameFilter(ExchangesEnum exchangeName) {
-        return (dir, name) -> name.toLowerCase().startsWith(exchangeName.getName().toLowerCase()) && name.toLowerCase().endsWith(fileExtension);
+        return (dir, name) -> name.toLowerCase().startsWith(exchangeName.getName().toLowerCase()) &&
+                name.toLowerCase().endsWith(filesConfig.getFilesSupportedExtension());
     }
 
-    public File getInputFolder(String customPath) {
-        return new File(StringUtils.isBlank(customPath) ? inputFilesPath : customPath);
-    }
-    
-    public File getOutputFolder(String customPath) {
-        return new File(StringUtils.isBlank(customPath) ? outputFilesPath : guaranteeFinalSlash(customPath));
+    public File getInputFolder() {
+        File inputFolder = new File(StringUtils.isBlank(filesConfig.getFilesCustomPath()) ? filesConfig.getFilesInputPath() : filesConfig.getFilesCustomPath());
+        if (!inputFolder.isDirectory()) {
+            throw new RuntimeException("Input folder not found or it's not a directory: " + inputFolder.getPath().toString());
+        }
+        return inputFolder;
     }
 
-    public File getOutputFileNamePath(String customPath) {
-        String folder = StringUtils.isBlank(customPath) ? outputFilesPath : guaranteeFinalSlash(customPath);
-        return new File(folder.concat(outputFileName));
+    public File getOutputFolder() {
+        return new File(StringUtils.isBlank(filesConfig.getFilesCustomPath()) ?
+                filesConfig.getFilesOutputPath() : guaranteeFinalSlash(filesConfig.getFilesCustomPath()));
     }
-    
+
+    public File getOutputFileNamePath() {
+        String folder = StringUtils.isBlank(filesConfig.getFilesCustomPath()) ?
+                filesConfig.getFilesOutputPath() : guaranteeFinalSlash(filesConfig.getFilesCustomPath());
+        return new File(folder.concat(filesConfig.getFilesOutputName()));
+    }
+
     // todo create a generic solution
     private String guaranteeFinalSlash(String path) {
         return path.endsWith("\\") ? path : path.concat("\\");

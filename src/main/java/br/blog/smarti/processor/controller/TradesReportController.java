@@ -13,12 +13,11 @@ public class TradesReportController {
     private ReportTradeService reportTradeService;
 
     /***
-     * Process all reports exchange file from input folder and generate a standard csv output report with all exchanges trades. 
-     * @param filesPath the input/output folder path where it's stored the trades reports to process
+     * Process all reports exchange file from input folder and generate a standard csv output report with all exchanges trades.
      * @throws Exception
      */
-    public void processTradesReports(String filesPath) throws Exception {
-        reportTradeService.generateReportOutputTradeCsv(filesPath);
+    public void processTradesReports() throws Exception {
+        reportTradeService.generateReportOutputTradeCsv();
     }
 
 }

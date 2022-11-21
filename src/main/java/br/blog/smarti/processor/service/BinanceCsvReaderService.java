@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,24 +17,18 @@ import java.util.List;
 public class BinanceCsvReaderService extends CsvReader implements CsvTradesReader {
 
     private static final String EXCHANGE_NAME = ExchangesEnum.BINANCE.getName().toLowerCase();
-
+    
     @Autowired
     private FileUtils fileUtils;
 
-    public List<BinanceTrade> readAllTradeFiles() throws FileNotFoundException {
-        return readAllTradeFiles(null);
-    }
-
     @Override
-    public List<BinanceTrade> readAllTradeFiles(String customPath) {
+    public List<BinanceTrade> readAllTradeFiles() {
         List<BinanceTrade> trades = new ArrayList<>();
         List<BinanceTrade> fileTrades = new ArrayList<>();
-
-        File inputFolder = fileUtils.getInputFolder(customPath);
-        List<File> reportsFiles = fileUtils.listFilesFromFolder(inputFolder, ExchangesEnum.BINANCE);
+        List<File> reportsFiles = fileUtils.listFilesFromInputFolder(ExchangesEnum.BINANCE);
 
         if (CollectionUtils.isEmpty(reportsFiles)) {
-            log.error("There are no csv files in folder: {}. The report name must begin with '{}'. Ex: '{}_trades_jan-dec_2021.csv'", inputFolder, EXCHANGE_NAME, EXCHANGE_NAME);
+            log.error("There are no csv files in folder: {}. The report name must begin with '{}'. Ex: '{}_trades_jan-dec_2021.csv'", fileUtils.getInputFolder(), EXCHANGE_NAME, EXCHANGE_NAME);
         }
 
         for (File file : reportsFiles) {

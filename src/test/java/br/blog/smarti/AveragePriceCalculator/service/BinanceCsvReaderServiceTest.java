@@ -32,8 +32,8 @@ public class BinanceCsvReaderServiceTest {
         File file01 = new File(getClass().getClassLoader().getResource("binance_01.csv").getFile());
         File file02 = new File(getClass().getClassLoader().getResource("binance_02.csv").getFile());
         
-        when(fileUtils.getInputFolder(any())).thenReturn(filePath);
-        when(fileUtils.listFilesFromFolder(any(), any())).thenReturn(List.of(file01, file02));
+        when(fileUtils.getInputFolder()).thenReturn(filePath);
+        when(fileUtils.listFilesFromInputFolder(any())).thenReturn(List.of(file01, file02));
 
         List<BinanceTrade> trades = fixture.readAllTradeFiles();
 
