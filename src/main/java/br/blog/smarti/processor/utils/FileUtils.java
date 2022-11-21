@@ -2,12 +2,13 @@ package br.blog.smarti.processor.utils;
 
 import br.blog.smarti.processor.configuration.FilesConfig;
 import br.blog.smarti.processor.enums.ExchangesEnum;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
@@ -32,32 +33,27 @@ public final class FileUtils {
     }
 
     public File getInputFolder() {
-        File inputFolder = new File(StringUtils.isBlank(filesConfig.getFilesCustomPath()) ? 
-                filesConfig.getFilesInputPath() : filesConfig.getFilesCustomPath());
+        File inputFolder = new File(filesConfig.hasCustomPath() ?
+                filesConfig.getFilesCustomPath() : filesConfig.getFilesInputPath());
         validateDirectory(inputFolder);
         return inputFolder;
     }
 
     public File getOutputFolder() {
-        File outputFolder = new File(StringUtils.isBlank(filesConfig.getFilesCustomPath()) ?
-                filesConfig.getFilesOutputPath() : filesConfig.getFilesCustomPath());
+        File outputFolder = new File(filesConfig.hasCustomPath() ?
+                filesConfig.getFilesCustomPath() : filesConfig.getFilesOutputPath());
         validateDirectory(outputFolder);
         return outputFolder;
     }
-    
+
     private void validateDirectory(File folder) {
         if (!folder.isDirectory()) {
             throw new RuntimeException("Input folder not found or it's not a directory: " + folder.getPath());
         }
     }
 
-    public File getOutputFileNamePath() {
-        String folder = getOutputFolder().getAbsolutePath();
-        return new File(guaranteeFinalSlash(folder).concat(filesConfig.getFilesOutputName()));
-    }
-
-    // todo create a generic solution
-    private String guaranteeFinalSlash(String path) {
-        return path.endsWith("\\") ? path : path.concat("\\");
+    public File getOutputFilePathName() {
+        Path filePathName = Paths.get(getOutputFolder().getAbsolutePath(), filesConfig.getFilesOutputName());
+        return new File(filePathName.toString());
     }
 }

@@ -143,7 +143,7 @@ public class ReportTradeServiceTest {
         String fileName = "reportOutputTest.csv";
         File filePathName = new File(this.getClass().getClassLoader().getResource(fileName).getPath());
 
-        when(fileUtils.getOutputFileNamePath()).thenReturn(filePathName);
+        when(fileUtils.getOutputFilePathName()).thenReturn(filePathName);
         when(csvTradesReader.stream()).thenAnswer(getStreamAnswer(getCsvReaders()));
         when(binanceCsvReader.readAllTradeFiles()).thenReturn(List.of(BinanceTradeMother.createBuyTrade(), BinanceTradeMother.createSellTrade()));
         when(bitfinexCsvReader.readAllTradeFiles()).thenReturn(List.of(BitfinexTradeMother.createBuyTrade(), BitfinexTradeMother.createSellTrade()));

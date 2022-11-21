@@ -63,7 +63,7 @@ public class ReportTradeService {
 
     public void generateReportOutputTradeCsv(String customPath, ExchangesEnum... exchanges) throws FileNotFoundException {
         List<ReportOutputTrade> trades = generateReportOutputTradeContent(exchanges);
-        File getOutputFileNamePath = fileUtils.getOutputFileNamePath();
+        File getOutputFileNamePath = fileUtils.getOutputFilePathName();
 
         try (FileWriter writer = new FileWriter(getOutputFileNamePath)) {
             StatefulBeanToCsv<ReportOutputTrade> beanToCsv = new StatefulBeanToCsvBuilder<ReportOutputTrade>(writer)
