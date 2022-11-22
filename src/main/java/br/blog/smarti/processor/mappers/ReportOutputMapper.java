@@ -20,24 +20,24 @@ public interface ReportOutputMapper {
     BinanceConvertionRulesImpl binanceRules = new BinanceConvertionRulesImpl();
     BitfinexConvertionRulesImpl bitfinexRules = new BitfinexConvertionRulesImpl();
 
-    @Mapping(target = "dateTime", expression = "java(binanceRules.toDateTime(s.getDateTime()))")
+    @Mapping(target = "pair", expression = "java(br.blog.smarti.processor.rules.ConvertionRules.toStandardPair(s.getPair()))")
+    @Mapping(target = "price", expression = "java(br.blog.smarti.processor.rules.ConvertionRules.toMoney(s.getPrice()))")
+    @Mapping(target = "exchange", expression = "java(br.blog.smarti.processor.rules.ConvertionRules.getExchange(\"BINANCE\"))")
+    @Mapping(target = "dateTime", expression = "java(br.blog.smarti.processor.rules.ConvertionRules.toDateTime(s.getDateTime()))")
     @Mapping(target = "side", expression = "java(binanceRules.identifySide(s.getSide()))")
-    @Mapping(target = "price", expression = "java(binanceRules.toMoney(s.getPrice()))")
     @Mapping(target = "executed", expression = "java(binanceRules.getExecuted(s.getExecuted()))")
     @Mapping(target = "amount", expression = "java(binanceRules.calculateAmount(s.getAmount(), null))")
-    @Mapping(target = "exchange", expression = "java(binanceRules.getExchange(\"BINANCE\"))")
     @Mapping(target = "fee", expression = "java(binanceRules.toFee(s.getFee(), null))")
-    @Mapping(target = "pair", expression = "java(binanceRules.toStandardPair(s.getPair()))")
     ReportOutputTrade toEntity(BinanceTrade s);
 
-    @Mapping(target = "dateTime", expression = "java(bitfinexRules.toDateTime(s.getDateTime()))")
+    @Mapping(target = "pair", expression = "java(br.blog.smarti.processor.rules.ConvertionRules.toStandardPair(s.getPair()))")
+    @Mapping(target = "price", expression = "java(br.blog.smarti.processor.rules.ConvertionRules.toMoney(s.getPrice()))")
+    @Mapping(target = "exchange", expression = "java(br.blog.smarti.processor.rules.ConvertionRules.getExchange(\"BITFINEX\"))")
+    @Mapping(target = "dateTime", expression = "java(br.blog.smarti.processor.rules.ConvertionRules.toDateTime(s.getDateTime()))")
     @Mapping(target = "side", expression = "java(bitfinexRules.identifySide(s.getExecuted()))")
-    @Mapping(target = "price", expression = "java(bitfinexRules.toMoney(s.getPrice()))")
     @Mapping(target = "executed", expression = "java(bitfinexRules.getExecuted(s.getExecuted()))")
     @Mapping(target = "amount", expression = "java(bitfinexRules.calculateAmount(s.getPrice(), s.getExecuted()))")
-    @Mapping(target = "exchange", expression = "java(bitfinexRules.getExchange(\"BITFINEX\"))")
     @Mapping(target = "fee", expression = "java(bitfinexRules.toFee(s.getFee(), s.getFeeCurrency()))")
-    @Mapping(target = "pair", expression = "java(bitfinexRules.toStandardPair(s.getPair()))")
     ReportOutputTrade toEntity(BitfinexTrade s);
 
     default ReportOutputTrade toEntity(Trade trade) {
