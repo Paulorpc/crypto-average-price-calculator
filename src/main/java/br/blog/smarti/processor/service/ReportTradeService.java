@@ -33,7 +33,8 @@ public class ReportTradeService {
     @Autowired
     private FileUtils fileUtils;
 
-    private ReportOutputMapper mapper = new ReportOutputMapper();
+    @Autowired
+    private ReportOutputMapper mapper;
 
     public List<ReportOutputTrade> generateReportOutputTradeContent(ExchangesEnum... exchanges) throws FileNotFoundException {
         List<ExchangesEnum> exchangesList = Arrays.asList(exchanges);
