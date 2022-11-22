@@ -44,7 +44,7 @@ public class ReportTradeService {
             csvTradesReader.stream().forEach(csvTradesReader -> trades.addAll(csvTradesReader.readAllTradeFiles()));
         } else {
             exchangesList.forEach(exchangeEnum -> csvTradesReader.stream()
-                    .filter(c -> c.getClass().getCanonicalName().contains(exchangeEnum.getName()))
+                    .filter(reader -> isCsvReaderFromExchange(reader, exchangeEnum))
                     .findAny()
                     .ifPresent(csvTradesReader -> trades.addAll(csvTradesReader.readAllTradeFiles())));
         }
@@ -57,12 +57,12 @@ public class ReportTradeService {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
-
-    public void generateReportOutputTradeCsv() throws FileNotFoundException {
-        generateReportOutputTradeCsv(null);
+    
+    private boolean isCsvReaderFromExchange(CsvTradesReader reader, ExchangesEnum exchanges) {
+        return reader.getClass().getCanonicalName().contains(exchanges.getName());
     }
 
-    public void generateReportOutputTradeCsv(String customPath, ExchangesEnum... exchanges) throws FileNotFoundException {
+    public void generateReportOutputTradeCsv(ExchangesEnum... exchanges) throws FileNotFoundException {
         List<ReportOutputTrade> trades = generateReportOutputTradeContent(exchanges);
         File getOutputFileNamePath = fileUtils.getOutputFilePathName();
 
@@ -80,6 +80,4 @@ public class ReportTradeService {
             throw new RuntimeException(e);
         }
     }
-
-
 }
