@@ -1,5 +1,6 @@
 package br.blog.smarti.processor;
 
+import br.blog.smarti.processor.configuration.FilesConfig;
 import br.blog.smarti.processor.controller.TradesReportController;
 import br.blog.smarti.processor.enums.ArgumentsOptionsEnum;
 import lombok.extern.log4j.Log4j2;
@@ -11,22 +12,26 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @Log4j2
 @SpringBootApplication
-public class AveragePriceCalculatorApplication implements ApplicationRunner {
+public class TradesReportProcessor implements ApplicationRunner {
+    
+    @Autowired
+    private FilesConfig filesConfig;
 
     @Autowired
     private TradesReportController tradesReportController;
 
     public static void main(String[] args) {
-        SpringApplication.run(AveragePriceCalculatorApplication.class, args);
+        SpringApplication.run(TradesReportProcessor.class, args);
     }
 
     @Override
     public void run(ApplicationArguments arg) throws Exception {
         try {
-            String filesPath = getPathOptionParameter(arg);
-            tradesReportController.processTradesReports(filesPath);
+            filesConfig.setFilesCustomPath(getPathOptionParameter(arg));
+            tradesReportController.processTradesReports();
         } catch (Exception e) {
             log.error(e.getClass());
+            e.printStackTrace();
             return;
         }
     }

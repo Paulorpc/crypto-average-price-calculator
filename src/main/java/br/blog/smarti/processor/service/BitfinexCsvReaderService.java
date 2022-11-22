@@ -1,8 +1,8 @@
 package br.blog.smarti.processor.service;
 
-import br.blog.smarti.processor.Utils.FileUtils;
 import br.blog.smarti.processor.entity.BitfinexTrade;
 import br.blog.smarti.processor.enums.ExchangesEnum;
+import br.blog.smarti.processor.utils.FileUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,20 +22,14 @@ public class BitfinexCsvReaderService extends CsvReader implements CsvTradesRead
     @Autowired
     private FileUtils fileUtils;
 
-    public List<BitfinexTrade> readAllTradeFiles() throws FileNotFoundException {
-        return readAllTradeFiles(null);
-    }
-
     @Override
-    public List<BitfinexTrade> readAllTradeFiles(String customPath) {
+    public List<BitfinexTrade> readAllTradeFiles() {
         List<BitfinexTrade> trades = new ArrayList<>();
         List<BitfinexTrade> fileTrades = new ArrayList<>();
-
-        File inputFolder = fileUtils.getInputFolder(customPath);
-        List<File> reportsFiles = fileUtils.listFilesFromFolder(inputFolder, ExchangesEnum.BITFINEX);
+        List<File> reportsFiles = fileUtils.listFilesFromInputFolder(ExchangesEnum.BITFINEX);
 
         if (CollectionUtils.isEmpty(reportsFiles)) {
-            log.error("There are no csv files in folder: {}. The report name must begin with '{}'. Ex: '{}_trades_jan-dec_2021.csv'", inputFolder, EXCHANGE_NAME, EXCHANGE_NAME);
+            log.error("There are no csv files in folder: {}. The report name must begin with '{}'. Ex: '{}_trades_jan-dec_2021.csv'", fileUtils.getInputFolder(), EXCHANGE_NAME, EXCHANGE_NAME);
         }
 
         for (File file : reportsFiles) {

@@ -1,10 +1,10 @@
 package br.blog.smarti.processor.service;
 
-import br.blog.smarti.processor.Utils.FileUtils;
 import br.blog.smarti.processor.entity.ReportOutputTrade;
 import br.blog.smarti.processor.entity.Trade;
 import br.blog.smarti.processor.enums.ExchangesEnum;
 import br.blog.smarti.processor.mappers.ReportOutputMapper;
+import br.blog.smarti.processor.utils.FileUtils;
 import com.opencsv.CSVWriter;
 import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
@@ -33,23 +33,20 @@ public class ReportTradeService {
     @Autowired
     private FileUtils fileUtils;
 
-    private ReportOutputMapper mapper = new ReportOutputMapper();
+    @Autowired
+    private ReportOutputMapper mapper;
 
     public List<ReportOutputTrade> generateReportOutputTradeContent(ExchangesEnum... exchanges) throws FileNotFoundException {
-        return generateReportOutputTradeContent(null, exchanges);
-    }
-
-    public List<ReportOutputTrade> generateReportOutputTradeContent(String customPath, ExchangesEnum... exchanges) throws FileNotFoundException {
         List<ExchangesEnum> exchangesList = Arrays.asList(exchanges);
         List<Trade> trades = new ArrayList<>();
 
         if (exchangesList.isEmpty()) {
-            csvTradesReader.stream().forEach(csvTradesReader -> trades.addAll(csvTradesReader.readAllTradeFiles(customPath)));
+            csvTradesReader.stream().forEach(csvTradesReader -> trades.addAll(csvTradesReader.readAllTradeFiles()));
         } else {
             exchangesList.forEach(exchangeEnum -> csvTradesReader.stream()
                     .filter(c -> c.getClass().getCanonicalName().contains(exchangeEnum.getName()))
                     .findAny()
-                    .ifPresent(csvTradesReader -> trades.addAll(csvTradesReader.readAllTradeFiles(customPath))));
+                    .ifPresent(csvTradesReader -> trades.addAll(csvTradesReader.readAllTradeFiles())));
         }
 
         Long filesReaded = trades.stream().map(Trade::getSource).distinct().count();
@@ -66,8 +63,8 @@ public class ReportTradeService {
     }
 
     public void generateReportOutputTradeCsv(String customPath, ExchangesEnum... exchanges) throws FileNotFoundException {
-        List<ReportOutputTrade> trades = generateReportOutputTradeContent(customPath, exchanges);
-        File getOutputFileNamePath = fileUtils.getOutputFileNamePath(customPath);
+        List<ReportOutputTrade> trades = generateReportOutputTradeContent(exchanges);
+        File getOutputFileNamePath = fileUtils.getOutputFilePathName();
 
         try (FileWriter writer = new FileWriter(getOutputFileNamePath)) {
             StatefulBeanToCsv<ReportOutputTrade> beanToCsv = new StatefulBeanToCsvBuilder<ReportOutputTrade>(writer)

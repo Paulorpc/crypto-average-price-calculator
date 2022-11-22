@@ -7,9 +7,10 @@ import br.blog.smarti.processor.enums.SideEnum;
 import br.blog.smarti.processor.mappers.ReportOutputMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 public class ReportOutputMapperTest {
-    private ReportOutputMapper mapper = new ReportOutputMapper();
+    private ReportOutputMapper mapper = Mappers.getMapper(ReportOutputMapper.class);
 
     @Test
     void mapFromBinanceTrade() {

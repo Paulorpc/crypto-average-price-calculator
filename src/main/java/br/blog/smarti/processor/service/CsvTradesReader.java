@@ -6,5 +6,5 @@ import java.io.FileNotFoundException;
 import java.util.List;
 
 public interface CsvTradesReader<T extends Trade> {
-    List<T> readAllTradeFiles(String customPath);
+    List<T> readAllTradeFiles();
 }
