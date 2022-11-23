@@ -12,7 +12,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,12 +26,10 @@ public class BinanceCsvReaderServiceTest {
     private BinanceCsvReaderService fixture;
 
     @Test
-    void shouldReadBinanceCsv() throws FileNotFoundException {
-        File filePath = new File(this.getClass().getClassLoader().getResource("").getPath());
+    void shouldReadBinanceCsv() {
         File file01 = new File(getClass().getClassLoader().getResource("binance_01.csv").getFile());
         File file02 = new File(getClass().getClassLoader().getResource("binance_02.csv").getFile());
         
-        when(fileUtils.getInputFolder()).thenReturn(filePath);
         when(fileUtils.listFilesFromInputFolder(any())).thenReturn(List.of(file01, file02));
 
         List<BinanceTrade> trades = fixture.readAllTradeFiles();

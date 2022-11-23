@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
 public class ReportOutputMapperTest {
-    private ReportOutputMapper mapper = Mappers.getMapper(ReportOutputMapper.class);
+    private final ReportOutputMapper mapper = Mappers.getMapper(ReportOutputMapper.class);
 
     @Test
     void mapFromBinanceTrade() {
@@ -18,7 +18,7 @@ public class ReportOutputMapperTest {
         Assertions.assertEquals("4000.0015072000", outputTrade.getPrice().toString());
         Assertions.assertEquals("1.3900000000", outputTrade.getExecuted().toString());
         Assertions.assertEquals("0.00209501", outputTrade.getAmount().toString());
-        Assertions.assertEquals("0.0001817000BNB", outputTrade.getFee().toString());
+        Assertions.assertEquals("0.0001817000BNB", outputTrade.getFee());
         Assertions.assertEquals("Binance", outputTrade.getExchange());
         Assertions.assertEquals("BTCUSD", outputTrade.getPair());
         Assertions.assertEquals("Binance_fileName.csv", outputTrade.getSource());
@@ -31,7 +31,7 @@ public class ReportOutputMapperTest {
         Assertions.assertEquals("60000.00001197", outputTrade.getPrice().toString());
         Assertions.assertEquals("83.51464", outputTrade.getExecuted().toString());
         Assertions.assertEquals("5010878.4009996702408", outputTrade.getAmount().toString());
-        Assertions.assertEquals("0.0000019993404816BTC", outputTrade.getFee().toString());
+        Assertions.assertEquals("0.0000019993404816BTC", outputTrade.getFee());
         Assertions.assertEquals("Bitfinex", outputTrade.getExchange());
         Assertions.assertEquals("XLMBTC", outputTrade.getPair());
         Assertions.assertEquals("Bitfinex_fileName.csv", outputTrade.getSource());
@@ -44,7 +44,7 @@ public class ReportOutputMapperTest {
         Assertions.assertEquals("50000.00001197", outputTrade.getPrice().toString());
         Assertions.assertEquals("83.51464", outputTrade.getExecuted().toString());
         Assertions.assertEquals("4175732.0009996702408", outputTrade.getAmount().toString());
-        Assertions.assertEquals("0.0000019993404816BTC", outputTrade.getFee().toString());
+        Assertions.assertEquals("0.0000019993404816BTC", outputTrade.getFee());
         Assertions.assertEquals("Bitfinex", outputTrade.getExchange());
         Assertions.assertEquals("XLMBTC", outputTrade.getPair());
         Assertions.assertEquals("Bitfinex_fileName.csv", outputTrade.getSource());
