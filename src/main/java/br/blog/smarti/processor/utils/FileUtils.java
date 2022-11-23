@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Component
-public final class FileUtils {
+public class FileUtils {
 
     @Autowired
     private FilesConfig filesConfig;

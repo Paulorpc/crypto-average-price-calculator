@@ -5,6 +5,7 @@ import br.blog.smarti.AveragePriceCalculator.mothers.BitfinexTradeMother;
 import br.blog.smarti.processor.entity.ReportOutputTrade;
 import br.blog.smarti.processor.entity.Trade;
 import br.blog.smarti.processor.enums.ExchangesEnum;
+import br.blog.smarti.processor.mappers.ReportOutputMapper;
 import br.blog.smarti.processor.service.BinanceCsvReaderService;
 import br.blog.smarti.processor.service.BitfinexCsvReaderService;
 import br.blog.smarti.processor.service.CsvTradesReader;
@@ -13,6 +14,7 @@ import br.blog.smarti.processor.utils.FileUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -28,6 +30,7 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -49,10 +52,14 @@ public class ReportTradeServiceTest {
     @Mock
     private FileUtils fileUtils;
 
+    @Spy
+    private ReportOutputMapper reportOutputMapper = Mappers.getMapper(ReportOutputMapper.class);
+
     @Test
     void shouldGenerateReportOutputTradeContentFromBinance() throws FileNotFoundException {
         when(csvTradesReader.stream()).thenReturn(Stream.of(getCsvReaders()));
         when(binanceCsvReader.readAllTradeFiles()).thenReturn(List.of(BinanceTradeMother.createBuyTrade(), BinanceTradeMother.createSellTrade()));
+        when(reportOutputMapper.toEntity(any(Trade.class))).thenReturn(new ReportOutputTrade());
 
         List<ReportOutputTrade> trades = fixture.generateReportOutputTradeContent(ExchangesEnum.BINANCE);
 
@@ -71,6 +78,7 @@ public class ReportTradeServiceTest {
     void shouldGenerateReportOutputTradeContentFromBitfinex() throws FileNotFoundException {
         when(csvTradesReader.stream()).thenReturn(Stream.of(getCsvReaders()));
         when(bitfinexCsvReader.readAllTradeFiles()).thenReturn(List.of(BitfinexTradeMother.createBuyTrade(), BitfinexTradeMother.createSellTrade()));
+        when(reportOutputMapper.toEntity(any(Trade.class))).thenReturn(new ReportOutputTrade());
 
         List<ReportOutputTrade> trades = fixture.generateReportOutputTradeContent(ExchangesEnum.BITFINEX);
 
@@ -111,6 +119,7 @@ public class ReportTradeServiceTest {
         when(csvTradesReader.stream()).thenReturn(Stream.of(getCsvReaders()));
         when(binanceCsvReader.readAllTradeFiles()).thenReturn(List.of(BinanceTradeMother.createBuyTrade(), BinanceTradeMother.createSellTrade()));
         when(bitfinexCsvReader.readAllTradeFiles()).thenReturn(List.of(BitfinexTradeMother.createBuyTrade(), BitfinexTradeMother.createSellTrade()));
+        when(reportOutputMapper.toEntity(any(Trade.class))).thenReturn(new ReportOutputTrade());
 
         List<ReportOutputTrade> trades = fixture.generateReportOutputTradeContent();
 
@@ -127,6 +136,7 @@ public class ReportTradeServiceTest {
         when(csvTradesReader.stream()).thenAnswer(getStreamAnswer(getCsvReaders()));
         when(binanceCsvReader.readAllTradeFiles()).thenReturn(List.of(BinanceTradeMother.createBuyTrade(), BinanceTradeMother.createSellTrade()));
         when(bitfinexCsvReader.readAllTradeFiles()).thenReturn(List.of(BitfinexTradeMother.createBuyTrade(), BitfinexTradeMother.createSellTrade()));
+        when(reportOutputMapper.toEntity(any(Trade.class))).thenReturn(new ReportOutputTrade());
 
         List<ReportOutputTrade> trades = fixture.generateReportOutputTradeContent(ExchangesEnum.BINANCE, ExchangesEnum.BITFINEX);
 
@@ -141,15 +151,17 @@ public class ReportTradeServiceTest {
     @Test
     void shouldGenerateReportOutputTradeCsvFile() throws IOException {
         String fileName = "reportOutputTest.csv";
-        File filePathName = new File(this.getClass().getClassLoader().getResource(fileName).getPath());
+        String pathName = getClass().getClassLoader().getResource("").toString()
+                .replace("file:", "").concat(fileName);
 
-        when(fileUtils.getOutputFilePathName()).thenReturn(filePathName);
+        when(fileUtils.getOutputFilePathName()).thenReturn(new File(pathName));
         when(csvTradesReader.stream()).thenAnswer(getStreamAnswer(getCsvReaders()));
         when(binanceCsvReader.readAllTradeFiles()).thenReturn(List.of(BinanceTradeMother.createBuyTrade(), BinanceTradeMother.createSellTrade()));
         when(bitfinexCsvReader.readAllTradeFiles()).thenReturn(List.of(BitfinexTradeMother.createBuyTrade(), BitfinexTradeMother.createSellTrade()));
 
         fixture.generateReportOutputTradeCsv();
 
+        File filePathName = new File(getClass().getClassLoader().getResource(fileName).getFile());
         String fileContent = Files.readString(filePathName.toPath(), StandardCharsets.UTF_8);
         Assertions.assertThat(fileContent).containsIgnoringCase("binance");
         Assertions.assertThat(fileContent).containsIgnoringCase("bitfinex");

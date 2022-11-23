@@ -36,7 +36,7 @@ public class ReportTradeService {
     @Autowired
     private ReportOutputMapper mapper;
 
-    public List<ReportOutputTrade> generateReportOutputTradeContent(ExchangesEnum... exchanges) throws FileNotFoundException {
+    public List<ReportOutputTrade> generateReportOutputTradeContent(ExchangesEnum... exchanges) {
         List<ExchangesEnum> exchangesList = Arrays.asList(exchanges);
         List<Trade> trades = new ArrayList<>();
 
@@ -62,18 +62,18 @@ public class ReportTradeService {
         return reader.getClass().getCanonicalName().contains(exchanges.getName());
     }
 
-    public void generateReportOutputTradeCsv(ExchangesEnum... exchanges) throws FileNotFoundException {
+    public void generateReportOutputTradeCsv(ExchangesEnum... exchanges) {
         List<ReportOutputTrade> trades = generateReportOutputTradeContent(exchanges);
-        File getOutputFileNamePath = fileUtils.getOutputFilePathName();
+        File outputFileNamePath = fileUtils.getOutputFilePathName();
 
-        try (FileWriter writer = new FileWriter(getOutputFileNamePath)) {
+        try (FileWriter writer = new FileWriter(outputFileNamePath)) {
             StatefulBeanToCsv<ReportOutputTrade> beanToCsv = new StatefulBeanToCsvBuilder<ReportOutputTrade>(writer)
                     .withSeparator(COMMA)
                     .withQuotechar(CSVWriter.NO_QUOTE_CHARACTER)
                     .build();
             beanToCsv.write(trades);
             log.info("Trades Report generated with success!");
-            log.info("Destination path: " + getOutputFileNamePath);
+            log.info("Destination path: " + outputFileNamePath);
         } catch (Exception e) {
             log.error("Error generating report output. {}", e.getMessage());
             log.debug(e);
