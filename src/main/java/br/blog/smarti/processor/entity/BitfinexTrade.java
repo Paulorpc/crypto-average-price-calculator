@@ -1,8 +1,5 @@
 package br.blog.smarti.processor.entity;
 
-import com.opencsv.bean.CsvBindAndJoinByPosition;
-import com.opencsv.bean.CsvBindAndJoinByPositions;
-import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvBindByPosition;
 import lombok.Getter;
 import lombok.Setter;

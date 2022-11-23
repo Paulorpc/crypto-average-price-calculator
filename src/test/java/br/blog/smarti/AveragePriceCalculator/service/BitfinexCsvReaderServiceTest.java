@@ -12,7 +12,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,7 +26,7 @@ public class BitfinexCsvReaderServiceTest {
     private BitfinexCsvReaderService fixture;
 
     @Test
-    void shouldReadBitfinexCsv() throws FileNotFoundException {
+    void shouldReadBitfinexCsv() {
         File filePath = new File(this.getClass().getClassLoader().getResource("").getPath());
         File file01 = new File(getClass().getClassLoader().getResource("bitfinex_01.csv").getFile());
         File file02 = new File(getClass().getClassLoader().getResource("bitfinex_02.csv").getFile());

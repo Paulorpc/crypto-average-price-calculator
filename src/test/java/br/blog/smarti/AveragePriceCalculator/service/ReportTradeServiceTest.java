@@ -23,7 +23,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -56,7 +55,7 @@ public class ReportTradeServiceTest {
     private ReportOutputMapper reportOutputMapper = Mappers.getMapper(ReportOutputMapper.class);
 
     @Test
-    void shouldGenerateReportOutputTradeContentFromBinance() throws FileNotFoundException {
+    void shouldGenerateReportOutputTradeContentFromBinance() {
         when(csvTradesReader.stream()).thenReturn(Stream.of(getCsvReaders()));
         when(binanceCsvReader.readAllTradeFiles()).thenReturn(List.of(BinanceTradeMother.createBuyTrade(), BinanceTradeMother.createSellTrade()));
         when(reportOutputMapper.toEntity(any(Trade.class))).thenReturn(new ReportOutputTrade());
@@ -75,7 +74,7 @@ public class ReportTradeServiceTest {
     }
 
     @Test
-    void shouldGenerateReportOutputTradeContentFromBitfinex() throws FileNotFoundException {
+    void shouldGenerateReportOutputTradeContentFromBitfinex() {
         when(csvTradesReader.stream()).thenReturn(Stream.of(getCsvReaders()));
         when(bitfinexCsvReader.readAllTradeFiles()).thenReturn(List.of(BitfinexTradeMother.createBuyTrade(), BitfinexTradeMother.createSellTrade()));
         when(reportOutputMapper.toEntity(any(Trade.class))).thenReturn(new ReportOutputTrade());
@@ -94,7 +93,7 @@ public class ReportTradeServiceTest {
     }
 
     @Test
-    void shouldGenerateReportOutputTradeContentFrom2ExchangeFiles() throws FileNotFoundException {
+    void shouldGenerateReportOutputTradeContentFrom2ExchangeFiles() {
         var bitfinexBuyTrade = BitfinexTradeMother.createBuyTrade();
         bitfinexBuyTrade.setSource("someOtherFile.csv");
 
@@ -115,7 +114,7 @@ public class ReportTradeServiceTest {
     }
 
     @Test
-    void shouldGenerateReportOutputTradeContentFromAllExchanges() throws FileNotFoundException {
+    void shouldGenerateReportOutputTradeContentFromAllExchanges() {
         when(csvTradesReader.stream()).thenReturn(Stream.of(getCsvReaders()));
         when(binanceCsvReader.readAllTradeFiles()).thenReturn(List.of(BinanceTradeMother.createBuyTrade(), BinanceTradeMother.createSellTrade()));
         when(bitfinexCsvReader.readAllTradeFiles()).thenReturn(List.of(BitfinexTradeMother.createBuyTrade(), BitfinexTradeMother.createSellTrade()));
@@ -132,7 +131,7 @@ public class ReportTradeServiceTest {
     }
 
     @Test
-    void shouldGenerateReportOutputTradeContentFromAllExchangesWithParameter() throws FileNotFoundException {
+    void shouldGenerateReportOutputTradeContentFromAllExchangesWithParameter() {
         when(csvTradesReader.stream()).thenAnswer(getStreamAnswer(getCsvReaders()));
         when(binanceCsvReader.readAllTradeFiles()).thenReturn(List.of(BinanceTradeMother.createBuyTrade(), BinanceTradeMother.createSellTrade()));
         when(bitfinexCsvReader.readAllTradeFiles()).thenReturn(List.of(BitfinexTradeMother.createBuyTrade(), BitfinexTradeMother.createSellTrade()));
@@ -180,7 +179,7 @@ public class ReportTradeServiceTest {
     private Answer<Stream> getStreamAnswer(CsvTradesReader... readers) {
         Answer<Stream> answer = new Answer<Stream>() {
             @Override
-            public Stream answer(InvocationOnMock invocation) throws Throwable {
+            public Stream answer(InvocationOnMock invocation) {
                 return Stream.of(readers);
             }
         };
